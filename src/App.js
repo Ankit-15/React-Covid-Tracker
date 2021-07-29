@@ -14,7 +14,6 @@ import { sortData, prettyPrintStat } from "./util";
 import numeral from "numeral";
 import Map from "./Map";
 import "leaflet/dist/leaflet.css";
-import { PopUp } from "./Popup";
 const App = () => {
   const [country, setInputCountry] = useState("worldwide");
   const [countryInfo, setCountryInfo] = useState({});
@@ -24,23 +23,17 @@ const App = () => {
   const [casesType, setCasesType] = useState("cases");
   const [mapCenter, setMapCenter] = useState({ lat: 34.80746, lng: -40.4796 });
   const [mapZoom, setMapZoom] = useState(3);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-
     fetch("https://disease.sh/v3/covid-19/all")
       .then((response) => response.json())
       .then((data) => {
         setCountryInfo(data);
-        setLoading(false);
       });
   }, []);
 
   useEffect(() => {
     const getCountriesData = async () => {
-      setLoading(true);
-
       fetch("https://disease.sh/v3/covid-19/countries")
         .then((response) => response.json())
         .then((data) => {
@@ -49,7 +42,6 @@ const App = () => {
             value: country.countryInfo.iso2,
           }));
           let sortedData = sortData(data);
-          setLoading(false);
 
           setCountries(countries);
           setMapCountries(data);
@@ -67,19 +59,16 @@ const App = () => {
       countryCode === "worldwide"
         ? "https://disease.sh/v3/covid-19/all"
         : `https://disease.sh/v3/covid-19/countries/${countryCode}`;
-    setLoading(true);
 
     await fetch(url)
       .then((response) => response.json())
       .then((data) => {
         setInputCountry(countryCode);
         // setMapCountries([data]);
-        setLoading(false);
 
         setCountryInfo([data]);
         setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
         setMapZoom(4);
-        console.log(countryInfo);
       });
   };
   return (
